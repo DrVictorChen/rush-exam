@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RUSH Exam 超音波 Protocol</title>
+<style>
+:root{--bg:#0d1117;--surface:#161b22;--text:#e6edf3;--text-muted:#8b949e;--border:#30363d;--accent:#58a6ff;--accent2:#3fb950;--yellow:#d29922;--red:#f85149;--purple:#bc8cff}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:16px}
+.container{max-width:860px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:1.8em;margin:32px 0 12px;color:var(--text);border-bottom:2px solid var(--accent);padding-bottom:12px}
+h2{font-size:1.45em;margin:40px 0 12px;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:8px}
+h3{font-size:1.15em;margin:28px 0 8px;color:var(--accent2)}
+h4{font-size:1em;margin:20px 0 6px;color:var(--purple)}
+p{margin:8px 0}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+blockquote{border-left:3px solid var(--yellow);background:rgba(210,153,34,.08);padding:10px 16px;margin:12px 0;border-radius:0 6px 6px 0;color:var(--text-muted)}
+blockquote strong{color:var(--yellow)}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.92em;overflow-x:auto;display:block}
+thead th{background:var(--surface);color:var(--accent);text-align:left;padding:10px 12px;border:1px solid var(--border);position:sticky;top:0;white-space:nowrap}
+tbody td{padding:8px 12px;border:1px solid var(--border);vertical-align:top}
+tbody tr:hover{background:rgba(88,166,255,.04)}
+ul,ol{margin:8px 0 8px 24px}
+li{margin:4px 0}
+code{background:var(--surface);padding:2px 6px;border-radius:4px;font-size:.9em;color:var(--purple)}
+img,.media{max-width:100%;height:auto;border-radius:8px;margin:8px 0;display:block;border:1px solid var(--border)}
+.img-row{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0}
+.img-row img,.img-row .media{flex:1;min-width:200px;max-width:48%}
+.img-caption{text-align:center;color:var(--text-muted);font-size:.88em;margin-top:4px;margin-bottom:12px}
+.toc{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 24px;margin:20px 0}
+.toc h3{margin:0 0 8px;color:var(--text)}
+.toc ul{list-style:none;margin:0;padding:0}
+.toc li{margin:4px 0}
+.toc li a{color:var(--text-muted);font-size:.95em}
+.toc li a:hover{color:var(--accent)}
+.toc ul ul{padding-left:20px}
+.tag{display:inline-block;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:2px 10px;font-size:.8em;color:var(--text-muted);margin:2px}
+.highlight-box{background:rgba(63,185,80,.06);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:12px 16px;margin:12px 0}
+@media(max-width:600px){
+  body{font-size:15px}
+  .container{padding:16px 14px 60px}
+  h1{font-size:1.5em}
+  h2{font-size:1.25em}
+  table{font-size:.84em}
+  .img-row img,.img-row .media{max-width:100%;min-width:0}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>RUSH Exam 超音波<br><small style="font-size:.55em;color:var(--text-muted)">Rapid Ultrasound for Shock and Hypotension</small></h1>
+
+<div class="toc">
+<h3>📋 目錄</h3>
+<ul>
+<li><a href="#overview">概述</a></li>
+<li><a href="#himap">HI-MAP 記憶口訣</a></li>
+<li><a href="#prep">準備</a></li>
+<li><a href="#step1">Step 1：H — Heart 心臟</a>
+<ul>
+<li><a href="#ef">1.1 左心室射出分率 (EF)</a></li>
+<li><a href="#rv">1.2 RV Strain — 肺栓塞</a></li>
+<li><a href="#pericardial">1.3 心包積液與填塞</a></li>
+<li><a href="#co">1.4 心輸出量</a></li>
+</ul></li>
+<li><a href="#step2">Step 2：I — IVC 下腔靜脈</a></li>
+<li><a href="#step3">Step 3：M — Morison's / eFAST</a></li>
+<li><a href="#step4">Step 4：A — Aorta 主動脈</a></li>
+<li><a href="#step5">Step 5：P — Pulmonary 肺部</a></li>
+<li><a href="#limitations">限制</a></li>
+<li><a href="#references">參考資料</a></li>
+</ul>
+</div>
+
+<!-- ===== OVERVIEW ===== -->
+<h2 id="overview">概述</h2>
+<p>RUSH Exam 是由 Weingart 等人於 2006 年提出，用於快速評估<strong>未分化休克 (Undifferentiated Shock)</strong> 與低血壓患者的床邊超音波 protocol。熟練後可在 <strong>2-5 分鐘</strong>內完成。</p>
+<blockquote><strong>RUSH vs eFAST</strong>：eFAST 用於創傷情境尋找出血來源；RUSH 則更廣泛，適用於任何未分化低血壓的患者。</blockquote>
+
+<hr>
+
+<!-- ===== HI-MAP ===== -->
+<h2 id="himap">HI-MAP 記憶口訣</h2>
+<blockquote>當病人 MAP 很低時，我們要把他變成 <strong>HI MAP</strong>！</blockquote>
+
+<img src="assets/RUSH-Exam-Ultrasound-Protocol-34.png" alt="RUSH Exam Protocol Overview">
+
+<table>
+<thead><tr><th>字母</th><th>代表</th><th>評估病理</th></tr></thead>
+<tbody>
+<tr><td><strong>H</strong></td><td>Heart 心臟</td><td>EF 降低 → 收縮性心衰竭；EF 過高 → 分佈性/低血容積性休克；心包積液 → 填塞；RV 擴大 → PE；RWMA → MI；心輸出量高/低</td></tr>
+<tr><td><strong>I</strong></td><td>IVC 下腔靜脈</td><td>可塌陷 → 低血容積/分佈性休克；不可塌陷 → 阻塞性/心因性休克</td></tr>
+<tr><td><strong>M</strong></td><td>Morison's / eFAST</td><td>腹腔積血 (Hemoperitoneum)；血胸 (Hemothorax)</td></tr>
+<tr><td><strong>A</strong></td><td>Aorta 主動脈</td><td>腹主動脈瘤 (AAA)；主動脈剝離 (Dissection)</td></tr>
+<tr><td><strong>P</strong></td><td>Pulmonary 肺部</td><td>氣胸 (Pneumothorax)</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<!-- ===== PREP ===== -->
+<h2 id="prep">準備</h2>
+<ul>
+<li><strong>患者體位</strong>：仰臥 (Supine)</li>
+<li><strong>探頭 (Transducer)</strong>：主要使用 <strong>Phased Array Probe</strong>（部分可用 Curvilinear）；DVT 檢查需換 Linear Probe</li>
+<li><strong>Preset</strong>：eFAST 或 Abdominal Mode</li>
+<li><strong>超音波機</strong>：盡量放在患者右側</li>
+</ul>
+
+<hr>
+
+<!-- ===== STEP 1: HEART ===== -->
+<h2 id="step1">Step 1：H — Heart 心臟</h2>
+<p>在低血壓情境下評估心臟功能：心臟是問題本身，還是在代償其他問題？</p>
+<p>主要四個 view：Parasternal Long Axis (PLAX)、Parasternal Short Axis (PSAX)、Apical 4 Chamber (A4C)、Subxiphoid View。</p>
+<blockquote>⚠️ 使用 eFAST/Abdominal preset 時，orientation marker 在螢幕左側，需將探頭指標旋轉 180°。</blockquote>
+
+<h3 id="ef">1.1 左心室射出分率 (Ejection Fraction, EF)</h3>
+<p>觀察左心室在心臟週期中的收縮情形：</p>
+<ul>
+<li><strong>Hyperdynamic（過動）</strong> → 可能為低血容積或敗血症</li>
+<li><strong>Hypodynamic（收縮不良）</strong> → 可能為收縮性心衰竭 (Systolic Heart Failure)</li>
+<li>注意二尖瓣前葉 (Anterior Leaflet of Mitral Valve) 是否在舒張期自由活動並接近心室中隔</li>
+</ul>
+
+<p><strong>不同程度 EF 的超音波影像：</strong></p>
+
+<h4>Hyperdynamic（過動）</h4>
+<img src="assets/Hyperdynamic-LV-Left-Ventricle-Ejection-Fraction-Function-Cardiac-Ultrasound-Echocardiography.gif" alt="Hyperdynamic EF">
+
+<h4>Normal（正常）</h4>
+<img src="assets/Normal-LV-Left-Ventricle-Ejection-Fraction-Function-Cardiac-Ultrasound-Echocardiography-Parasternal-Long-Axis.gif" alt="Normal EF">
+
+<h4>Mild Decreased（輕度降低）</h4>
+<img src="assets/Mild-Decreased-LV-Left-Ventricle-Ejection-Fraction-Function-Cardiac-Ultrasound-Echocardiography.gif" alt="Mild Decreased EF">
+
+<h4>Moderate Decreased（中度降低）</h4>
+<img src="assets/Moderate-Decreased-LV-Left-Ventricle-Ejection-Fraction-Function-Cardiac-Ultrasound-Echocardiography-POCUS.gif" alt="Moderate Decreased EF">
+
+<h4>Severe Decreased（重度降低）</h4>
+<img src="assets/Severe-Severely-Decreased-LV-Left-Ventricle-Ejection-Fraction-Function-Cardiac-Ultrasound-Echocardiography.gif" alt="Severe Decreased EF">
+
+<h3 id="rv">1.2 右心室壓力過大 — 肺栓塞 (RV Strain — Pulmonary Embolism)</h3>
+<ul>
+<li>RV 正常大小約為 LV 的 <strong>⅔</strong>，若比例增加或心室中隔向左凸出 → RV strain</li>
+<li><strong>McConnell's Sign</strong>：RV 游離壁運動減弱 (Hypokinesis)，但心尖活動正常 (Apical Sparing)</li>
+</ul>
+
+<img src="assets/McConnells-Sign.gif" alt="McConnell's Sign">
+<p class="img-caption">McConnell's Sign</p>
+
+<ul>
+<li><strong>D Sign</strong>：PSAX view 下，RV 壓力增加使心室中隔被推向 LV，使 LV 呈 "D" 字形</li>
+</ul>
+
+<img src="assets/Pressure-Overload-D-Sign.gif" alt="D Sign">
+<p class="img-caption">D Sign — Pressure Overload</p>
+
+<blockquote>⚠️ 以上發現僅提示 RV strain，並非 PE 的特異性表現。若發現 RV strain，應接續進行 <strong>DVT 超音波</strong>（尋找不可壓縮的靜脈）。DVT + RV strain = 高度懷疑 PE。</blockquote>
+
+<h3 id="pericardial">1.3 心包積液與填塞 (Pericardial Effusion & Tamponade)</h3>
+<p>心臟周圍出現顯著的 <strong>anechoic（無回音）</strong> 區域 → 心包積液</p>
+
+<p><strong>鑑別心包積液 vs 肋膜積液</strong>：以降主動脈 (Descending Aorta) 為界——積液在降主動脈<strong>前方</strong>為心包積液，<strong>後方</strong>為肋膜積液。</p>
+
+<img src="assets/Pericardial-Effusion-and-Pleural-Effusion-Cardiac-Ultrasound-Echocardiography.gif" alt="Pericardial vs Pleural Effusion">
+<p class="img-caption">心包積液 vs 肋膜積液鑑別</p>
+
+<img src="assets/Pericardial-Effusion-eFAST-FAST-scan-ultrasound.gif" alt="Pericardial Effusion on eFAST">
+
+<p><strong>心包脂肪墊 (Pericardial Fat Pad)</strong> 可能模擬積液——脂肪通常較前方、活動性較差、回音較強：</p>
+
+<img src="assets/Pericardial-Fat-Pad-Cardiac-Ultrasound-Echocardiography-POCUS.gif" alt="Pericardial Fat Pad">
+
+<p><strong>心包填塞 (Cardiac Tamponade)</strong>：重點不在積液大小，而在<strong>積液累積速度</strong>。</p>
+
+<img src="assets/Pericardial-Effusion-Tamponade-Pressure-versus-Time-Rapid-vs-Slow-accumulation-Graph-Chart-1024x631.png" alt="Tamponade Pressure vs Time">
+
+<p>辨別填塞的兩個徵象：</p>
+<p><strong>1. Right Atrial Systolic Collapse（右心房收縮期塌陷）</strong>— 最早、最敏感</p>
+<img src="assets/Pericardial-Effusion-with-Tamponade-and-RA-systolic-collapse.gif" alt="RA Systolic Collapse">
+
+<p><strong>2. Right Ventricular Diastolic Collapse（右心室舒張期塌陷）</strong>— 較晚、更具特異性</p>
+<img src="assets/Pericardial-Effusion-Tamponade-RV-Diastolic-Collapse.gif" alt="RV Diastolic Collapse">
+
+<h3 id="co">1.4 心輸出量 (Cardiac Output)</h3>
+<p>透過測量 <strong>LVOT Diameter</strong> 和 <strong>VTI (Velocity Time Integral)</strong> 計算心輸出量，幫助區分休克類型。</p>
+<img src="assets/Cardiac-Output-Stroke-Volume-Ultrasound-Echocardiography-Handout-PDF-1024x791.png" alt="Cardiac Output Calculation">
+
+<hr>
+
+<!-- ===== STEP 2: IVC ===== -->
+<h2 id="step2">Step 2：I — IVC 下腔靜脈</h2>
+<p>評估中心靜脈壓 (Central Venous Pressure, CVP)：是否有體液流失？還是體液過多導致心臟泵功能不足？</p>
+
+<p><strong>IVC 不可塌陷 (Non-collapsible)：</strong></p>
+<img src="assets/Dilated-Non-Collapsible-IVC-Long-axis-cardiac-ultrasound-echocardiography.gif" alt="Non-collapsible IVC">
+
+<p><strong>IVC 可塌陷 (Collapsible)：</strong></p>
+<img src="assets/Collapsible-IVC-Long-Axis-cardiac-ultrasound-echocardiography.gif" alt="Collapsible IVC">
+
+<h3>IVC 測量與 CVP 估算表</h3>
+<table>
+<thead><tr><th>IVC 直徑 (cm)</th><th>塌陷率 (%)</th><th>估算 CVP (mmHg)</th></tr></thead>
+<tbody>
+<tr><td>&lt; 1.5</td><td>&gt; 50%</td><td>0 – 5</td></tr>
+<tr><td>1.5 – 2.5</td><td>&gt; 50%</td><td>6 – 10</td></tr>
+<tr><td>1.5 – 2.5</td><td>&lt; 50%</td><td>11 – 15</td></tr>
+<tr><td>&gt; 2.5</td><td>&lt; 50%</td><td>16 – 20</td></tr>
+</tbody>
+</table>
+<p style="color:var(--text-muted);font-size:.88em"><em>Adapted from Kircher et al.</em></p>
+
+<ul>
+<li><strong>高 CVP</strong>（擴張、不可塌陷 IVC）→ 阻塞性或心因性休克</li>
+<li><strong>低 CVP</strong>（小且可塌陷 IVC）→ 分佈性或低血容積性休克</li>
+</ul>
+
+<h3>休克鑑別表 (Shock Differentiation Table)</h3>
+<table>
+<thead><tr><th>休克類型</th><th>LV Ejection Fraction</th><th>Cardiac Output 心輸出量</th><th>IVC</th></tr></thead>
+<tbody>
+<tr><td><strong>Distributive 分佈性</strong></td><td>High</td><td>High</td><td>Collapsible 可塌陷</td></tr>
+<tr><td><strong>Obstructive 阻塞性</strong></td><td>Normal / High</td><td>Low</td><td>Noncollapsible 不可塌陷</td></tr>
+<tr><td><strong>Cardiogenic 心因性</strong></td><td>Low</td><td>Low</td><td>Noncollapsible 不可塌陷</td></tr>
+<tr><td><strong>Hypovolemic 低血容積性</strong></td><td>High</td><td>Low</td><td>Collapsible 可塌陷</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<!-- ===== STEP 3: MORISON'S ===== -->
+<h2 id="step3">Step 3：M — Morison's Pouch / eFAST</h2>
+<p>執行 eFAST 掃描（RUQ、LUQ、骨盆），尋找<strong>腹腔積血 (Hemoperitoneum)</strong> 或<strong>血胸 (Hemothorax)</strong> 作為低血壓原因。</p>
+
+<h3>3.1 腹腔積血 (Hemoperitoneum)</h3>
+
+<h4>右上腹 (RUQ)</h4>
+<p>三個常見積液位置：</p>
+<ul>
+<li><strong>Hepatorenal Space (Morison's Pouch)</strong></li>
+<li><strong>肝臟尾端 (Caudal Tip of Liver)</strong></li>
+<li><strong>肝上間隙 (Suprahepatic Space)</strong></li>
+</ul>
+
+<img src="assets/Right-Upper-Quadrant-RUQ-Morisons-Pouch-eFAST-ultrasound-Potential-Space-Illustration-1024x701.png" alt="RUQ Potential Spaces">
+<img src="assets/RUQ-Positive-eFAST-Fast-Ultrasound-Scan-Morisons-Pouch-and-Liver-Tip-Caudal.gif" alt="RUQ Positive - Morison's + Liver Tip">
+<img src="assets/RUQ-Positive-eFAST-Fast-Ultrasound-Scan-Morisons-Pouch.gif" alt="RUQ Positive - Morison's">
+
+<h4>左上腹 (LUQ)</h4>
+<p>評估位置：</p>
+<ul>
+<li><strong>Perisplenic Space（脾周間隙）</strong></li>
+<li><strong>Spleen Tip（脾臟尖端）</strong></li>
+<li><strong>Splenorenal Recess（脾腎間隙）</strong></li>
+</ul>
+
+<blockquote>💡 LUQ 最常見積液位置是 <strong>Perisplenic Space</strong>，而非脾腎之間（因脾腎韌帶阻擋）。</blockquote>
+
+<img src="assets/Left-Upper-Quadrant-LUQ-Perisplenic-Space-eFAST-ultrasound-Potential-Space-Illustration-1024x727.png" alt="LUQ Potential Spaces">
+<img src="assets/Splenorenal-Left-Upper-Quadrant-LUQ-Perisplenic-Free-Fluid-Ultrasound-eFAST-exam.gif" alt="LUQ Positive">
+
+<h4>男性骨盆</h4>
+<p>積液出現在 <strong>Rectovesical Pouch（直腸膀胱窩）</strong>。</p>
+<img src="assets/Male-Pelvis-Rectovesical-Pouch-Ultrasound-Potential-Space.png" alt="Male Pelvis">
+<img src="assets/Free-Fluid-Male-Pelvis-Abdominal-eFAST-Ultrasound.gif" alt="Male Pelvis Free Fluid">
+
+<h4>女性骨盆</h4>
+<p>積液出現在 <strong>Pouch of Douglas（Douglas 窩 / 直腸子宮窩）</strong>。</p>
+<img src="assets/Female-Pelvis-Rectouterine-Pouch-of-Douglas-eFAST-ultrasound-Potential-Space-1024x801.png" alt="Female Pelvis">
+<img src="assets/Free-Fluid-Female-Pelvis-Abdominal-eFAST-Ultrasound.gif" alt="Female Pelvis Free Fluid">
+
+<h3>3.2 血胸 (Hemothorax)</h3>
+<p>評估完 RUQ/LUQ 後，將探頭向上移一至兩個肋間，檢查胸腔積液。</p>
+
+<p><strong>正常肺</strong>：Mirror Image Artifact，橫膈上方看不到脊椎。</p>
+<img src="assets/Mirror-Image-Artifact-Liver-Diaphragm-Lung.png" alt="Mirror Image Artifact">
+
+<p><strong>Positive Spine Sign（脊椎徵）</strong>：可在橫膈上方看到脊椎 → 胸腔有積液（超音波可穿透液體看到脊椎）。</p>
+<img src="assets/Spine-Sign-Ultrasound-Pleural-Effusion-Consolidation.gif" alt="Spine Sign">
+
+<hr>
+
+<!-- ===== STEP 4: AORTA ===== -->
+<h2 id="step4">Step 4：A — Aorta 主動脈</h2>
+
+<h3>4.1 腹主動脈瘤 (Abdominal Aortic Aneurysm, AAA)</h3>
+<ul>
+<li>正常主動脈直徑約 <strong>~2.0 cm</strong></li>
+<li>AAA 定義：腹主動脈 <strong>≥ 3 cm</strong> 或直徑增加 &gt; 50%</li>
+<li>髂動脈 <strong>≥ 1.5 cm</strong></li>
+<li><strong>AAA ≥ 5 cm + 低血壓 → 視為破裂直到排除</strong></li>
+<li>測量需從 <strong>外壁到外壁 (Outer wall to Outer wall)</strong></li>
+</ul>
+<img src="assets/Fusiform-Abdominal-Aortic-Aneurysm-AAA.gif" alt="AAA">
+
+<h3>4.2 主動脈剝離 (Aortic Dissection)</h3>
+<p>臨床表現多樣：胸痛、腹痛、背痛、中風樣症狀、甚至僅為全身不適。</p>
+<p>TTE 特異性高但敏感度不佳。若高度懷疑但 TTE 陰性 → 考慮 TEE 或 CT Angiogram。</p>
+<p>超音波上可見主動脈腔內的 <strong>free flap（游離瓣膜）</strong>：</p>
+
+<h4>PLAX — 升主動脈剝離</h4>
+<img src="assets/Aortic-Dissection-Parasternal-Long-Axis.gif" alt="Aortic Dissection PLAX">
+
+<h4>Suprasternal Notch — 升主動脈/主動脈弓</h4>
+<img src="assets/Aortic-Dissection-Ascending-Aorta-Suprasternal-Notch-Ultrasound.gif" alt="Aortic Dissection Suprasternal">
+
+<h4>降腹主動脈剝離</h4>
+<img src="assets/Aortic-Dissection-Descending-Abdominal-Aorta.gif" alt="Aortic Dissection Abdominal">
+
+<h4>主動脈剝離合併主動脈瓣逆流 (Aortic Regurgitation)</h4>
+<img src="assets/Aortic-Dissection-Aortic-Regurgitation-Ultrasound.gif" alt="Aortic Dissection + AR">
+
+<hr>
+
+<!-- ===== STEP 5: PULMONARY ===== -->
+<h2 id="step5">Step 5：P — Pulmonary 肺部</h2>
+<p>評估<strong>張力性氣胸 (Tension Pneumothorax)</strong> 作為低血壓/休克的原因。</p>
+
+<h3>氣胸評估三步驟</h3>
+
+<h4>第一步：Lung Sliding 存在 → 排除氣胸</h4>
+<p><strong>Lung Sliding 存在</strong>時，可在該掃描點以 <strong>100% 準確度排除氣胸</strong>。</p>
+<blockquote>記得在多個點掃描以提高敏感度。</blockquote>
+
+<p><strong>B-Mode — 正常 Lung Sliding：</strong></p>
+<img src="assets/Ultrasound-Lung-Sliding-with-Linear-Probe.gif" alt="Normal Lung Sliding">
+
+<p><strong>M-Mode — Seashore Sign（正常）：</strong></p>
+<img src="assets/Lung-ultrasound-Seashore-Sign-Sky-Ocean-Beach-1024x649.png" alt="Seashore Sign">
+
+<h4>第二步：Lung Sliding 缺失 ≠ 自動等於氣胸</h4>
+<p>其他原因包括：嚴重實質化 (Consolidation)、化學性肋膜沾黏 (Pleurodesis)、急性感染/發炎、肺纖維化、ARDS、主支氣管插管 (Mainstem Intubation)。</p>
+
+<p><strong>Absent Lung Sliding：</strong></p>
+<img src="assets/Absent-Lung-Sliding-Ultrasound.gif" alt="Absent Lung Sliding">
+
+<p><strong>M-Mode — Stratosphere / Barcode Sign（異常）：</strong></p>
+<img src="assets/Stratosphere-and-Bar-Code-Sign-Lung-Ultrasound-Pneumothorax.gif" alt="Barcode Sign">
+
+<h4>第三步：Lung Point 存在 → 確認氣胸</h4>
+<p><strong>Lung Point</strong>：正常 lung sliding 與缺失 lung sliding 的交界處 = 塌陷肺與正常肺的過渡點。可以 <strong>100% 準確度確認氣胸</strong>，並幫助評估氣胸大小。</p>
+
+<p><strong>B-Mode — Lung Point：</strong></p>
+<img src="assets/Lung-Point-Ultrasound-Pneumothorax.gif" alt="Lung Point B-Mode">
+
+<p><strong>M-Mode — Lung Point（Seashore → Barcode 的過渡）：</strong></p>
+<img src="assets/Lung-Point-Ultrasound-Pneumothorax-M-Mode.png" alt="Lung Point M-Mode">
+
+<hr>
+
+<!-- ===== LIMITATIONS ===== -->
+<h2 id="limitations">限制 (Limitations)</h2>
+<ul>
+<li>體型 (Body Habitus)</li>
+<li>患者體位限制</li>
+<li>物理環境限制影響理想成像</li>
+</ul>
+
+<hr>
+
+<!-- ===== REFERENCES ===== -->
+<h2 id="references">參考資料 (References)</h2>
+<ul>
+<li>來源：<a href="https://www.pocus101.com/rush-exam-ultrasound-protocol-step-by-step-guide/" target="_blank">POCUS 101 — RUSH Exam Step-by-Step Guide</a></li>
+<li>Weingart et al. (2006) — 原始 RUSH 文章</li>
+<li>Seif D, Perera P, et al. Bedside ultrasound in resuscitation and the rapid ultrasound in shock protocol. <em>Crit Care Res Pract</em>. 2012.</li>
+<li>Kircher et al. — IVC collapsibility index</li>
+<li>Husain LF, et al. Sonographic diagnosis of pneumothorax. <em>J Emerg Trauma Shock</em>. 2012.</li>
+<li>Chan S. Emergency Bedside Ultrasound to Detect Pneumothorax. <em>Acad Emerg Med</em>. 2003.</li>
+<li>Keikha M, et al. Diagnostic Accuracy of RUSH Exam: A Systematic Review and Meta-analysis. <em>Bull Emerg Trauma</em>. 2018.</li>
+</ul>
+
+<hr>
+<p style="text-align:center;color:var(--text-muted);font-size:.85em;margin-top:40px">Made with ❤️ by Jarvis · Source: POCUS 101</p>
+
+</div>
+</body>
+</html>
